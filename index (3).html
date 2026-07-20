@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>สต็อกครัว — Stock Management</title>
+<title>TangTang-Stock — Stock Management</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍜</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700;800&family=Noto+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -40,9 +41,13 @@
 
   header.top{ padding:16px 16px 12px; border-bottom:1px solid var(--rail); position:sticky; top:0; z-index:30; background:var(--counter); }
   .brand{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
-  .brand-left{ display:flex; align-items:baseline; gap:10px; }
-  .brand h1{ font-family:'Kanit',sans-serif; font-weight:800; font-size:20px; letter-spacing:0.5px; margin:0; color:var(--paper); }
+  .brand-left{ display:flex; align-items:center; gap:10px; }
+  .brand-logo{ font-size:26px; line-height:1; filter:drop-shadow(0 2px 4px rgba(200,30,30,0.35)); }
+  .brand-text{ display:flex; flex-direction:column; gap:1px; }
+  .brand h1{ font-family:'Kanit',sans-serif; font-weight:800; font-size:19px; letter-spacing:0.2px; margin:0; color:var(--paper); }
   html[data-theme="light"] .brand h1{ color:var(--ink); }
+  .brand-accent{ background:linear-gradient(90deg, var(--amber), #E8895C); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .brand-sub{ font-family:'Noto Sans Thai',sans-serif; font-size:10.5px; color:var(--ink-soft); letter-spacing:0.2px; }
   .brand .tag{ font-size:11px; color:var(--amber); border:1px solid var(--amber); border-radius:100px; padding:2px 8px; font-family:'IBM Plex Mono',monospace; letter-spacing:0.5px; }
   .icon-btn{ border:1px solid var(--rail); background:var(--counter-2); color:var(--paper); border-radius:9px; padding:8px 10px; font-size:15px; cursor:pointer; }
   html[data-theme="light"] .icon-btn{ color:var(--ink); }
@@ -85,8 +90,8 @@
 
   .home-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:12px; padding:16px; max-width:960px; margin:0 auto; }
   @media(min-width:640px){ .home-grid{ grid-template-columns:repeat(4,1fr); } }
-  .home-tile{ background:var(--paper); border-radius:14px; padding:16px 14px; cursor:pointer; text-align:left; box-shadow:0 8px 18px -10px rgba(0,0,0,0.55); border:none; display:flex; flex-direction:column; gap:8px; transition:transform .15s; position:relative; }
-  .home-tile:hover{ transform:translateY(-3px); }
+  .home-tile{ background:var(--paper); border-radius:14px; padding:16px 14px; cursor:pointer; text-align:left; box-shadow:0 8px 18px -10px rgba(0,0,0,0.55); border:none; display:flex; flex-direction:column; gap:8px; transition:transform .15s, box-shadow .15s; position:relative; }
+  .home-tile:hover{ transform:translateY(-4px); box-shadow:0 14px 26px -10px rgba(0,0,0,0.4); }
   .home-tile .icon{ font-size:28px; }
   .home-tile h3{ font-family:'Kanit',sans-serif; font-size:15px; font-weight:700; color:var(--ink); margin:0; }
   .home-tile .count{ font-size:12px; color:var(--ink-soft); font-family:'IBM Plex Mono',monospace; }
@@ -103,7 +108,9 @@
   .action-card{ flex:1; min-width:150px; background:var(--counter-2); border:1px solid var(--rail); border-radius:12px; padding:12px 14px; color:var(--paper); cursor:pointer; font-family:'Kanit',sans-serif; font-weight:600; font-size:13px; text-align:left; }
   html[data-theme="light"] .action-card{ color:var(--ink); }
   .action-card .sub{ display:block; font-family:'Noto Sans Thai',sans-serif; font-weight:400; font-size:11px; color:var(--ink-soft); margin-top:2px; }
-  .hero-btn{ margin:16px; max-width:960px; width:calc(100% - 32px); margin-left:auto; margin-right:auto; display:block; background:var(--amber); color:var(--amber-ink); border:none; border-radius:14px; padding:16px; font-family:'Kanit',sans-serif; font-weight:800; font-size:16px; cursor:pointer; box-shadow:0 10px 22px -10px rgba(226,163,59,0.55); }
+  .hero-btn{ margin:16px; max-width:960px; width:calc(100% - 32px); margin-left:auto; margin-right:auto; display:block; background:linear-gradient(135deg, var(--amber), #A81212); color:var(--amber-ink); border:none; border-radius:14px; padding:17px; font-family:'Kanit',sans-serif; font-weight:800; font-size:16px; cursor:pointer; box-shadow:0 12px 26px -10px rgba(200,30,30,0.5); transition:transform .12s, box-shadow .12s; letter-spacing:0.2px; }
+  .hero-btn:hover{ transform:translateY(-1px); box-shadow:0 16px 30px -10px rgba(200,30,30,0.6); }
+  .hero-btn:active{ transform:translateY(0); }
 
   .category-header{ display:flex; align-items:center; gap:10px; padding:14px 16px 4px; max-width:1200px; margin:0 auto; flex-wrap:wrap; }
   .back-btn{ border:1px solid var(--rail); background:var(--counter-2); color:var(--paper); border-radius:9px; padding:8px 12px; font-family:'Kanit',sans-serif; font-weight:600; font-size:13px; cursor:pointer; white-space:nowrap; }
@@ -181,6 +188,15 @@
   .unsaved-dot{ display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--amber); margin-left:4px; vertical-align:middle; }
 
   .add-item-btn{ width:100%; padding:14px; border-radius:10px; border:1.5px dashed var(--rail); background:transparent; color:#cfc7ba; font-family:'Kanit',sans-serif; font-weight:600; font-size:14px; cursor:pointer; margin-top:6px; }
+
+  .table-toolbar{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; padding:6px 6px 8px; }
+  .toolbar-hint{ font-family:'Noto Sans Thai',sans-serif; font-size:12px; color:#cfc7ba; }
+  html[data-theme="light"] .toolbar-hint{ color:#6E6E6E; }
+  .toolbar-btn{ border:1px solid var(--rail); background:var(--counter-2); color:var(--paper); border-radius:8px; padding:7px 12px; font-family:'Kanit',sans-serif; font-weight:600; font-size:12.5px; cursor:pointer; white-space:nowrap; }
+  html[data-theme="light"] .toolbar-btn{ color:var(--ink); }
+  .toolbar-btn:disabled{ opacity:0.4; cursor:not-allowed; }
+  .undo-redo-group{ display:flex; gap:4px; }
+  .undo-redo-group .icon-btn:disabled{ opacity:0.35; cursor:not-allowed; }
   .add-item-btn:hover{ border-color:var(--amber); color:var(--amber); }
 
   .chart-card{ background:var(--paper); border-radius:12px; padding:14px; margin-top:12px; box-shadow:0 8px 18px -10px rgba(0,0,0,0.55); }
@@ -223,13 +239,18 @@
 <header class="top">
   <div class="brand">
     <div class="brand-left">
-      <h1>🍳 สต็อกครัว</h1>
+      <div class="brand-logo">🍜</div>
+      <div class="brand-text">
+        <h1>TangTang<span class="brand-accent">-Stock</span></h1>
+        <span class="brand-sub">ระบบจัดการสต็อกวัตถุดิบ</span>
+      </div>
       <span class="tag">LIVE</span>
     </div>
     <div class="header-actions">
       <button class="icon-btn" id="themeBtn" title="สลับโหมดมืด/สว่าง">🌓</button>
       <button class="icon-btn" id="backupBtn" title="สำรอง/กู้คืนข้อมูล">🗂</button>
       <button class="icon-btn" id="homeBtn" title="หน้าแรก">🏠</button>
+      <button class="icon-btn" id="logoutBtn" title="ออกจากระบบ" style="display:none;">🚪</button>
     </div>
   </div>
   <div class="date-row">
@@ -259,11 +280,25 @@
 <div class="bottom-bar" id="bottomBar" style="display:none;">
   <button class="btn-secondary" id="exportBtn">⬇️ Export Excel</button>
   <button class="btn-secondary" id="reportBtn">📊 รายงาน/กราฟ</button>
-  <button class="btn-secondary" id="clearDayBtn">🧹 ล้างค่าวันนี้</button>
+  <button class="btn-secondary" id="clearDayBtn">🧹 ล้างค่าหน้านี้</button>
   <button class="btn-primary" id="saveAllBtn">💾 บันทึกทั้งหมด</button>
 </div>
 
 <div id="modalRoot"></div>
+<div class="modal-overlay" id="loginOverlay" style="display:none; z-index:500;">
+  <div class="modal">
+    <h2>🔒 เข้าสู่ระบบร้าน</h2>
+    <p class="note-txt">กรอกรหัสผ่านร้านเพื่อเข้าใช้งาน (รหัสเดียวกันสำหรับทุกคนในร้าน) — เข้าครั้งเดียวแล้วเครื่องนี้จะจำไว้ให้</p>
+    <div class="field">
+      <label>รหัสผ่านร้าน</label>
+      <input type="password" id="loginPassword" placeholder="กรอกรหัสผ่าน">
+    </div>
+    <p class="note-txt" id="loginError" style="color:var(--red); display:none;"></p>
+    <div class="modal-actions">
+      <button class="btn-confirm" id="loginSubmit" style="flex:1;">เข้าสู่ระบบ</button>
+    </div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -358,11 +393,16 @@ const FIREBASE_CONFIG = {
 };
 // ต้องตรงกับที่กรอกใน Firestore Security Rules ถ้าต้องการแยกข้อมูลหลายร้าน
 const SHOP_ID = "default-shop";
+// อีเมลภายใน (ผู้ใช้ไม่เห็น) ผูกกับรหัสผ่านร้านเดียว — ต้องสร้างผู้ใช้นี้ใน
+// Firebase Console → Authentication → Users ให้ตรงกับอีเมลนี้เป๊ะๆ (ดู README ข้อ 3)
+const AUTH_EMAIL = SHOP_ID + '@stock-app.local';
 
 let CLOUD_ENABLED = false;
 let fdb = null;
+let fauth = null;
 let unsubItems=null, unsubCats=null, unsubEntries=null;
 let SUPPRESS_ECHO = false; // avoid re-render storms while writing locally
+let firestoreListenersStarted = false;
 
 async function initCloudSync(){
   if(!FIREBASE_CONFIG.apiKey || FIREBASE_CONFIG.apiKey === 'YOUR_API_KEY'){
@@ -372,61 +412,30 @@ async function initCloudSync(){
   try{
     const appMod = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
     const fsMod = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+    const authMod = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js');
     const app = appMod.initializeApp(FIREBASE_CONFIG);
     fdb = fsMod.getFirestore(app);
+    fauth = authMod.getAuth(app);
     window.__fs = fsMod;
+    window.__auth = authMod;
     CLOUD_ENABLED = true;
     setSyncStatus('syncing', 'กำลังเชื่อมต่อ...');
 
-    const catsCol = fsMod.collection(fdb, 'shops', SHOP_ID, 'categories');
-    const itemsCol = fsMod.collection(fdb, 'shops', SHOP_ID, 'items');
-    const entriesCol = fsMod.collection(fdb, 'shops', SHOP_ID, 'entries');
-
-    // One-time push of local data if cloud is empty (first run migration)
-    const existingCats = await fsMod.getDocs(catsCol);
-    if(existingCats.empty){
-      for(const c of CATEGORIES) await fsMod.setDoc(fsMod.doc(catsCol, c.id), c);
-      for(const it of ITEMS) await fsMod.setDoc(fsMod.doc(itemsCol, it.id), it);
-      const localEntries = await idbGetAll('entries');
-      for(const e of localEntries) await fsMod.setDoc(fsMod.doc(entriesCol, e.key), e);
-    }
-
-    unsubCats = fsMod.onSnapshot(catsCol, async (snap)=>{
-      const arr = [];
-      snap.forEach(d=> arr.push(d.data()));
-      arr.sort((a,b)=>(a.order||0)-(b.order||0));
-      CATEGORIES = arr;
-      for(const c of arr) await idbPut('categories', c);
-      if(!SUPPRESS_ECHO){ setSyncStatus('on','ซิงก์แบบเรียลไทม์ — เชื่อมต่อแล้ว'); render(); }
-    });
-    unsubItems = fsMod.onSnapshot(itemsCol, async (snap)=>{
-      const arr = [];
-      snap.forEach(d=> arr.push(d.data()));
-      ITEMS = arr;
-      for(const it of arr) await idbPut('items', it);
-      if(!SUPPRESS_ECHO){ setSyncStatus('on','ซิงก์แบบเรียลไทม์ — เชื่อมต่อแล้ว'); render(); }
-    });
-    unsubEntries = fsMod.onSnapshot(entriesCol, async (snap)=>{
-      snap.docChanges().forEach(async (chg)=>{
-        const e = chg.doc.data();
-        await idbPut('entries', e);
-        if(!entryCache[e.date]) entryCache[e.date] = {};
-        entryCache[e.date][e.itemId] = e;
-        ENTRY_DATE_SET.add(e.date);
-      });
-      if(!SUPPRESS_ECHO){
-        const hasUnsavedEdits = Object.values(ENTRIES).some(e=>e.saved===false);
-        if(hasUnsavedEdits && APP_VIEW!=='home'){
-          setSyncStatus('on','มีข้อมูลใหม่จากเครื่องอื่น — บันทึกงานที่ค้างอยู่แล้วจะอัปเดตให้');
-        } else {
-          await loadWorkingEntries();
-          setSyncStatus('on','ซิงก์แบบเรียลไทม์ — เชื่อมต่อแล้ว');
-          render();
+    authMod.onAuthStateChanged(fauth, async (user)=>{
+      const logoutBtn = document.getElementById('logoutBtn');
+      if(user){
+        hideLoginOverlay();
+        if(logoutBtn) logoutBtn.style.display = '';
+        if(!firestoreListenersStarted){
+          firestoreListenersStarted = true;
+          await startFirestoreListeners(fsMod);
         }
+      } else {
+        if(logoutBtn) logoutBtn.style.display = 'none';
+        setSyncStatus('off', 'ต้องเข้าสู่ระบบก่อนใช้งาน');
+        showLoginOverlay();
       }
     });
-
-    setSyncStatus('on','ซิงก์แบบเรียลไทม์ — เชื่อมต่อแล้ว');
     return true;
   }catch(err){
     console.error('Cloud sync init failed', err);
@@ -435,7 +444,90 @@ async function initCloudSync(){
     return false;
   }
 }
+
+async function startFirestoreListeners(fsMod){
+  const catsCol = fsMod.collection(fdb, 'shops', SHOP_ID, 'categories');
+  const itemsCol = fsMod.collection(fdb, 'shops', SHOP_ID, 'items');
+  const entriesCol = fsMod.collection(fdb, 'shops', SHOP_ID, 'entries');
+
+  try{
+    // One-time push of local data if cloud is empty (first run migration)
+    const existingCats = await fsMod.getDocs(catsCol);
+    if(existingCats.empty){
+      for(const c of CATEGORIES) await fsMod.setDoc(fsMod.doc(catsCol, c.id), c);
+      for(const it of ITEMS) await fsMod.setDoc(fsMod.doc(itemsCol, it.id), it);
+      const localEntries = await idbGetAll('entries');
+      for(const e of localEntries) await fsMod.setDoc(fsMod.doc(entriesCol, e.key), e);
+    }
+  }catch(err){ console.error('Initial migration push failed:', err); }
+
+  unsubCats = fsMod.onSnapshot(catsCol, async (snap)=>{
+    const arr = [];
+    snap.forEach(d=> arr.push(d.data()));
+    arr.sort((a,b)=>(a.order||0)-(b.order||0));
+    CATEGORIES = arr;
+    for(const c of arr) await idbPut('categories', c);
+    if(!SUPPRESS_ECHO){ setSyncStatus('on','ซิงก์แบบเรียลไทม์ — เชื่อมต่อแล้ว'); render(); }
+  });
+  unsubItems = fsMod.onSnapshot(itemsCol, async (snap)=>{
+    const arr = [];
+    snap.forEach(d=> arr.push(d.data()));
+    ITEMS = arr;
+    for(const it of arr) await idbPut('items', it);
+    if(!SUPPRESS_ECHO){ setSyncStatus('on','ซิงก์แบบเรียลไทม์ — เชื่อมต่อแล้ว'); render(); }
+  });
+  unsubEntries = fsMod.onSnapshot(entriesCol, async (snap)=>{
+    snap.docChanges().forEach(async (chg)=>{
+      const e = chg.doc.data();
+      await idbPut('entries', e);
+      if(!entryCache[e.date]) entryCache[e.date] = {};
+      entryCache[e.date][e.itemId] = e;
+      ENTRY_DATE_SET.add(e.date);
+    });
+    if(!SUPPRESS_ECHO){
+      const hasUnsavedEdits = Object.values(ENTRIES).some(e=>e.saved===false);
+      if(hasUnsavedEdits && APP_VIEW!=='home'){
+        setSyncStatus('on','มีข้อมูลใหม่จากเครื่องอื่น — บันทึกงานที่ค้างอยู่แล้วจะอัปเดตให้');
+      } else {
+        await loadWorkingEntries();
+        setSyncStatus('on','ซิงก์แบบเรียลไทม์ — เชื่อมต่อแล้ว');
+        render();
+      }
+    }
+  });
+
+  setSyncStatus('on','ซิงก์แบบเรียลไทม์ — เชื่อมต่อแล้ว');
+}
+
+function showLoginOverlay(){
+  const ov = document.getElementById('loginOverlay');
+  if(ov) ov.style.display = 'flex';
+}
+function hideLoginOverlay(){
+  const ov = document.getElementById('loginOverlay');
+  if(ov) ov.style.display = 'none';
+}
+async function attemptLogin(){
+  const pwEl = document.getElementById('loginPassword');
+  const errEl = document.getElementById('loginError');
+  const btn = document.getElementById('loginSubmit');
+  const pw = pwEl.value;
+  errEl.style.display = 'none';
+  if(!pw){ errEl.textContent = 'กรุณากรอกรหัสผ่าน'; errEl.style.display = 'block'; return; }
+  btn.disabled = true; btn.textContent = 'กำลังเข้าสู่ระบบ...';
+  try{
+    await window.__auth.signInWithEmailAndPassword(fauth, AUTH_EMAIL, pw);
+    pwEl.value = '';
+  }catch(err){
+    console.error('Login failed:', err);
+    errEl.textContent = 'รหัสผ่านไม่ถูกต้อง หรือยังไม่ได้ตั้งค่าผู้ใช้ใน Firebase (ดู README ข้อ 3)';
+    errEl.style.display = 'block';
+  }finally{
+    btn.disabled = false; btn.textContent = 'เข้าสู่ระบบ';
+  }
+}
 function setSyncStatus(state, label){
+
   const dot = document.getElementById('syncDot');
   const lbl = document.getElementById('syncLabel');
   if(!dot) return;
@@ -535,6 +627,61 @@ function seedItems(){
 let CATEGORIES = [];
 let ITEMS = [];
 let ENTRIES = {};        // itemId -> working entry for CURRENT_DATE
+
+/* =======================================================================
+   UNDO / REDO — tracks edits to today's ENTRIES (in-memory, per session)
+======================================================================= */
+let undoStack = [];
+let redoStack = [];
+let fieldSnapshotBeforeEdit = null;
+const UNDO_LIMIT = 50;
+
+function snapshotEntries(){
+  return JSON.parse(JSON.stringify(ENTRIES));
+}
+function resetUndoRedo(){
+  undoStack = []; redoStack = []; fieldSnapshotBeforeEdit = null;
+  updateUndoRedoButtons();
+}
+function captureBeforeEdit(){
+  fieldSnapshotBeforeEdit = snapshotEntries();
+}
+function commitEditIfChanged(){
+  if(fieldSnapshotBeforeEdit === null) return;
+  if(JSON.stringify(ENTRIES) !== JSON.stringify(fieldSnapshotBeforeEdit)){
+    undoStack.push(fieldSnapshotBeforeEdit);
+    if(undoStack.length > UNDO_LIMIT) undoStack.shift();
+    redoStack = [];
+    updateUndoRedoButtons();
+  }
+  fieldSnapshotBeforeEdit = null;
+}
+function doUndo(){
+  if(undoStack.length===0) return;
+  redoStack.push(snapshotEntries());
+  ENTRIES = undoStack.pop();
+  updateUndoRedoButtons();
+  if(APP_VIEW==='category') renderSingleCategoryView();
+  else if(APP_VIEW==='all') renderAllView();
+  if(APP_VIEW==='category') renderSummary();
+  showToast('↶ เลิกทำแล้ว');
+}
+function doRedo(){
+  if(redoStack.length===0) return;
+  undoStack.push(snapshotEntries());
+  ENTRIES = redoStack.pop();
+  updateUndoRedoButtons();
+  if(APP_VIEW==='category') renderSingleCategoryView();
+  else if(APP_VIEW==='all') renderAllView();
+  if(APP_VIEW==='category') renderSummary();
+  showToast('↷ ทำซ้ำแล้ว');
+}
+function updateUndoRedoButtons(){
+  const u = document.getElementById('undoBtn');
+  const r = document.getElementById('redoBtn');
+  if(u) u.disabled = undoStack.length===0;
+  if(r) r.disabled = redoStack.length===0;
+}
 let ENTRY_DATE_SET = new Set();
 let CURRENT_CATEGORY = null;
 let SEARCH_Q = '';
@@ -563,6 +710,15 @@ function showToast(msg){
   clearTimeout(showToast._t);
   showToast._t = setTimeout(()=>t.classList.remove('show'), 1900);
 }
+window.addEventListener('error', (ev)=>{
+  console.error('Uncaught error:', ev.error || ev.message);
+  showToast('❌ เกิดข้อผิดพลาด: ' + (ev.message || 'unknown'));
+});
+window.addEventListener('unhandledrejection', (ev)=>{
+  console.error('Unhandled promise rejection:', ev.reason);
+  const msg = (ev.reason && ev.reason.message) ? ev.reason.message : String(ev.reason);
+  showToast('❌ เกิดข้อผิดพลาด: ' + msg);
+});
 
 /* =======================================================================
    DATA ACCESS
@@ -638,25 +794,28 @@ async function saveEntry(itemId){
 async function saveAllVisible(itemIds){
   for(const id of itemIds) await saveEntry(id);
 }
-async function clearDayEntries(){
-  for(const item of ITEMS){
-    const e = ENTRIES[item.id];
+async function clearDayEntries(itemIds){
+  itemIds.forEach(id=>{
+    const e = ENTRIES[id];
+    if(!e) return;
     e.added = 0; e.delivery = 0; e.bar = 0; e.note = '';
     e.remaining = calcRemaining(e);
-  }
-  await saveAllVisible(ITEMS.map(i=>i.id));
+  });
+  await saveAllVisible(itemIds);
 }
 function openClearDayConfirm(){
   if(isPastDateLocked()){ showToast('🔒 ข้อมูลถูกล็อกอยู่ — กดปุ่ม "แก้ไข" ก่อนล้างค่า'); return; }
+  const itemIds = APP_VIEW==='all' ? ITEMS.map(i=>i.id) : ITEMS.filter(i=>i.category===CURRENT_CATEGORY).map(i=>i.id);
+  const scopeLabel = APP_VIEW==='all' ? 'ทุกหมวดหมู่' : (CATEGORIES.find(c=>c.id===CURRENT_CATEGORY)?.name || 'หน้านี้');
   const root = document.getElementById('modalRoot');
   root.innerHTML = `
     <div class="modal-overlay" id="ov">
       <div class="modal">
-        <h2>🧹 ล้างค่าทั้งหมดของวันที่ ${CURRENT_DATE}</h2>
-        <p class="note-txt">จะรีเซ็ต "ลงของเพิ่ม", "เดลิเวอรี่", "ขึ้นบาร์" และหมายเหตุ ของทุกรายการในวันนี้กลับเป็น 0 (ค่า "ยกมา" จะไม่ถูกแตะต้อง) และบันทึกทันที ใช้เมื่อกรอกข้อมูลผิดทั้งหมดแล้วอยากเริ่มนับใหม่</p>
+        <h2>🧹 ล้างค่าของหน้านี้ (${esc(scopeLabel)})</h2>
+        <p class="note-txt">จะรีเซ็ต "ลงของเพิ่ม", "เดลิเวอรี่", "ขึ้นบาร์" และหมายเหตุ ของ ${itemIds.length} รายการในหน้านี้ กลับเป็น 0 (ค่า "สต็อกทั้งหมด" จะไม่ถูกแตะต้อง) และบันทึกทันที ใช้เมื่อกรอกข้อมูลผิดทั้งหมดแล้วอยากเริ่มนับใหม่เฉพาะหน้านี้</p>
         <div class="modal-actions">
           <button class="btn-cancel" id="m-cancel">ยกเลิก</button>
-          <button class="btn-confirm danger" id="m-clear">ล้างค่าทั้งหมด</button>
+          <button class="btn-confirm danger" id="m-clear">ล้างค่าหน้านี้</button>
         </div>
       </div>
     </div>`;
@@ -664,10 +823,20 @@ function openClearDayConfirm(){
   document.getElementById('m-cancel').addEventListener('click', close);
   document.getElementById('ov').addEventListener('click', (e)=>{ if(e.target.id==='ov') close(); });
   document.getElementById('m-clear').addEventListener('click', async ()=>{
-    await clearDayEntries();
-    close();
-    showToast('ล้างค่าของวันนี้เรียบร้อย ✓');
-    render();
+    try{
+      const before = snapshotEntries();
+      await clearDayEntries(itemIds);
+      undoStack.push(before);
+      if(undoStack.length > UNDO_LIMIT) undoStack.shift();
+      redoStack = [];
+      updateUndoRedoButtons();
+      close();
+      showToast('ล้างค่าของหน้านี้เรียบร้อย ✓');
+      render();
+    }catch(err){
+      console.error('Clear failed:', err);
+      showToast('❌ ล้างค่าไม่สำเร็จ: ' + (err && err.message ? err.message : 'unknown error'));
+    }
   });
 }
 
@@ -733,7 +902,7 @@ function render(){
       document.getElementById('categoryHeader').style.display = 'flex';
       document.getElementById('tabs').style.display = 'flex';
       document.getElementById('summary').style.display = 'flex';
-      renderCategoryHeader(CATEGORIES.find(c=>c.id===CURRENT_CATEGORY)?.name || '');
+      renderCategoryHeader(CATEGORIES.find(c=>c.id===CURRENT_CATEGORY)?.name || '', true);
       renderTabs();
       renderSummary();
       renderSingleCategoryView();
@@ -741,7 +910,7 @@ function render(){
       document.getElementById('categoryHeader').style.display = 'flex';
       document.getElementById('tabs').style.display = 'none';
       document.getElementById('summary').style.display = 'none';
-      renderCategoryHeader('📋 บันทึกรวมทุกหมวด — ' + CURRENT_DATE);
+      renderCategoryHeader('📋 บันทึกรวมทุกหมวด — ' + CURRENT_DATE, true);
       renderAllView();
     } else if(APP_VIEW === 'report'){
       document.getElementById('categoryHeader').style.display = 'flex';
@@ -803,18 +972,30 @@ function renderHome(){
     <button class="action-card" id="homeHistoryBtn">📁 ประวัติ<span class="sub">ดูย้อนหลังแยกเดือน/สัปดาห์ พร้อมดาวน์โหลด</span></button>
     <button class="action-card" id="homeExportBtn">⬇️ Export Excel<span class="sub">รายวัน / สัปดาห์ / เดือน — เลือกวันที่ได้</span></button>
     <button class="action-card" id="homeReportBtn">📊 รายงาน & กราฟ<span class="sub">ดูสรุปการใช้สินค้าแบบกราฟ</span></button>
+    <button class="action-card" id="homeRenameBtn">🏷 แก้ไขชื่อสินค้าแบบกลุ่ม<span class="sub">แก้การสะกดชื่อสินค้าหลายรายการพร้อมกัน</span></button>
     <button class="action-card" id="homeBackupBtn">🗂 สำรอง/กู้คืนข้อมูล<span class="sub">Export/Import เป็นไฟล์ JSON</span></button>
   `;
   document.getElementById('homeHistoryBtn').addEventListener('click', ()=>{ APP_VIEW='history'; render(); });
   document.getElementById('homeExportBtn').addEventListener('click', openExportModal);
   document.getElementById('homeReportBtn').addEventListener('click', ()=>{ APP_VIEW='report'; render(); });
+  document.getElementById('homeRenameBtn').addEventListener('click', openBulkRenameModal);
   document.getElementById('homeBackupBtn').addEventListener('click', openBackupModal);
 }
 
-function renderCategoryHeader(title){
+function renderCategoryHeader(title, showUndoRedo){
   const wrap = document.getElementById('categoryHeader');
-  wrap.innerHTML = `<button class="back-btn" id="backHomeBtn">← หน้าแรก</button><h2>${title}</h2>`;
+  const undoRedoHtml = showUndoRedo ? `
+    <div class="undo-redo-group">
+      <button class="icon-btn" id="undoBtn" title="เลิกทำ (Ctrl+Z)" disabled>↶</button>
+      <button class="icon-btn" id="redoBtn" title="ทำซ้ำ (Ctrl+Y)" disabled>↷</button>
+    </div>` : '';
+  wrap.innerHTML = `<button class="back-btn" id="backHomeBtn">← หน้าแรก</button><h2>${title}</h2>${undoRedoHtml}`;
   document.getElementById('backHomeBtn').addEventListener('click', ()=>{ APP_VIEW='home'; render(); });
+  if(showUndoRedo){
+    document.getElementById('undoBtn').addEventListener('click', doUndo);
+    document.getElementById('redoBtn').addEventListener('click', doRedo);
+    updateUndoRedoButtons();
+  }
 }
 
 function renderTabs(){
@@ -908,7 +1089,8 @@ function renderAllView(){
 function buildCategorySection(catId, showAddBtn){
   const wrap = document.createElement('div');
   const locked = isPastDateLocked();
-  let items = ITEMS.filter(i=>i.category===catId);
+  let items = ITEMS.filter(i=>i.category===catId).sort((a,b)=>(a.order||0)-(b.order||0));
+  const reorderable = !SEARCH_Q.trim(); // disable up/down while a search filter is active (order would be ambiguous)
   if(SEARCH_Q.trim()){
     const q = SEARCH_Q.trim().toLowerCase();
     items = items.filter(i=>i.name.toLowerCase().includes(q));
@@ -932,6 +1114,8 @@ function buildCategorySection(catId, showAddBtn){
     const used = calcUsedToday(e);
     const s = statusFor(rem, item.reorderPoint);
     const dl = daysLeft(rem, item.avgPerDay);
+    const moveUpDis = (!reorderable || idx===0) ? 'disabled' : '';
+    const moveDownDis = (!reorderable || idx===items.length-1) ? 'disabled' : '';
     return `
     <tr data-id="${item.id}" class="row-${s.cls}">
       <td class="col-idx">${idx+1}</td>
@@ -950,6 +1134,8 @@ function buildCategorySection(catId, showAddBtn){
       <td class="col-status"><span class="status-badge ${s.cls}">${s.emoji} ${s.text}</span>${e.saved?'':'<span class="unsaved-dot" title="ยังไม่บันทึก"></span>'}</td>
       <td class="col-note"><input type="text" class="inp-note" placeholder="หมายเหตุ..." value="${esc(e.note||'')}" ${dis}></td>
       <td class="col-actions">
+        <button class="row-btn btn-row-up" title="ย้ายขึ้น" ${moveUpDis}>🔼</button>
+        <button class="row-btn btn-row-down" title="ย้ายลง" ${moveDownDis}>🔽</button>
         <button class="row-btn btn-row-save" title="บันทึก" ${dis}>💾</button>
         <button class="row-btn btn-row-edit" title="แก้ไข">✎</button>
         <button class="row-btn btn-row-del" title="ลบ" ${dis}>🗑</button>
@@ -958,6 +1144,10 @@ function buildCategorySection(catId, showAddBtn){
   }).join('');
 
   wrap.innerHTML = `
+    <div class="table-toolbar">
+      <span class="toolbar-hint">${reorderable ? '💡 ใช้ปุ่ม 🔼🔽 ในตารางเพื่อสลับลำดับรายการ (จำไว้ให้ตรงกับที่พนักงานชิน)' : '🔍 กำลังค้นหา — ปิดช่องค้นหาก่อนเพื่อสลับลำดับรายการ'}</span>
+      <button class="toolbar-btn" data-sortcat="${catId}" ${reorderable ? '' : 'disabled'}>🔤 เรียงตามตัวอักษร (ก-ฮ)</button>
+    </div>
     <div class="table-wrap">
       <table class="stock-table" data-cat="${catId}">
         <thead>
@@ -969,7 +1159,7 @@ function buildCategorySection(catId, showAddBtn){
             <th></th><th></th><th></th><th></th>
           </tr>
           <tr>
-            <th>ลำดับ</th><th class="col-item">รายการ</th><th>หน่วย</th><th>ยกมา</th>
+            <th>ลำดับ</th><th class="col-item">รายการ</th><th>หน่วย</th><th>สต็อกทั้งหมด</th>
             <th>ลงของเพิ่ม</th><th>เดลิเวอรี่</th><th>ขึ้นบาร์</th>
             <th>รวมใช้ไปวันนี้</th>
             <th>ทั้งหมด</th><th>คงเหลือ</th>
@@ -989,6 +1179,8 @@ function bindCategorySection(catId){
   const table = document.querySelector(`table.stock-table[data-cat="${catId}"]`);
   const addBtn = document.querySelector(`.add-item-btn[data-addcat="${catId}"]`);
   if(addBtn) addBtn.addEventListener('click', ()=> openItemModal(null, catId));
+  const sortBtn = document.querySelector(`.toolbar-btn[data-sortcat="${catId}"]`);
+  if(sortBtn) sortBtn.addEventListener('click', ()=> sortCategoryAlphabetically(catId));
   if(!table) return;
 
   table.querySelectorAll('tbody tr').forEach(row=>{
@@ -1034,6 +1226,10 @@ function bindCategorySection(catId){
     }
     [carryI, addedI, deliveryI, barI].forEach(inp => inp.addEventListener('input', recompute));
     noteI.addEventListener('input', ()=>{ ENTRIES[id].note = noteI.value; markUnsaved(); });
+    [carryI, addedI, deliveryI, barI, noteI].forEach(inp => {
+      inp.addEventListener('focus', captureBeforeEdit);
+      inp.addEventListener('blur', commitEditIfChanged);
+    });
 
     unitI.addEventListener('change', async ()=>{
       item.unit = unitI.value.trim() || item.unit;
@@ -1065,7 +1261,36 @@ function bindCategorySection(catId){
     });
     row.querySelector('.btn-row-edit').addEventListener('click', ()=> openItemModal(item, item.category));
     row.querySelector('.btn-row-del').addEventListener('click', ()=> openDeleteItemConfirm(item));
+    const upBtn = row.querySelector('.btn-row-up');
+    const downBtn = row.querySelector('.btn-row-down');
+    if(upBtn) upBtn.addEventListener('click', ()=> moveItem(item, -1));
+    if(downBtn) downBtn.addEventListener('click', ()=> moveItem(item, 1));
   });
+}
+
+async function moveItem(item, direction){
+  const siblings = ITEMS.filter(i=>i.category===item.category).sort((a,b)=>(a.order||0)-(b.order||0));
+  const idx = siblings.findIndex(i=>i.id===item.id);
+  const swapIdx = idx + direction;
+  if(swapIdx < 0 || swapIdx >= siblings.length) return;
+  const other = siblings[swapIdx];
+  const tmp = item.order;
+  item.order = other.order;
+  other.order = tmp;
+  await persistItem(item);
+  await persistItem(other);
+  showToast('สลับลำดับแล้ว ✓');
+  render();
+}
+
+async function sortCategoryAlphabetically(catId){
+  const items = ITEMS.filter(i=>i.category===catId).sort((a,b)=>a.name.localeCompare(b.name,'th'));
+  for(let i=0;i<items.length;i++){
+    items[i].order = i+1;
+    await persistItem(items[i]);
+  }
+  showToast('เรียงตามตัวอักษรแล้ว ✓');
+  render();
 }
 
 /* =======================================================================
@@ -1185,7 +1410,7 @@ async function drawReportCharts(){
     detailWrap.innerHTML = `
       <table class="stock-table" style="min-width:640px;">
         <thead><tr>
-          <th>วันที่</th><th class="col-item">รายการ</th><th>ยกมา</th><th>เพิ่ม</th><th>เดลิเวอรี่</th><th>บาร์</th><th>คงเหลือ</th><th>ใช้ไป</th>
+          <th>วันที่</th><th class="col-item">รายการ</th><th>สต็อกทั้งหมด</th><th>เพิ่ม</th><th>เดลิเวอรี่</th><th>บาร์</th><th>คงเหลือ</th><th>ใช้ไป</th>
         </tr></thead>
         <tbody>
           ${detailRows.map(r=>`<tr>
@@ -1547,7 +1772,7 @@ async function exportExcel(dates, label){
         rowNo++;
         const row = {
           'ลำดับ': rowNo, 'วันที่': d, 'รายการสินค้า': item.name, 'หน่วย': item.unit,
-          'ยกมา': carry, 'ลงของเพิ่ม': added, 'เดลิเวอรี่': delivery, 'ขึ้นบาร์': bar,
+          'สต็อกทั้งหมด': carry, 'ลงของเพิ่ม': added, 'เดลิเวอรี่': delivery, 'ขึ้นบาร์': bar,
           'รวมใช้ไปวันนี้': usedToday, 'ทั้งหมด': total, 'คงเหลือ': remaining,
           'ใช้เฉลี่ย/วัน': item.avgPerDay, 'จุดสั่งซื้อ': item.reorderPoint, 'สถานะ': s.text,
           'หมายเหตุ': e ? (e.note||'') : ''
@@ -1574,6 +1799,54 @@ async function exportExcel(dates, label){
 /* =======================================================================
    BACKUP / RESTORE (JSON)
 ======================================================================= */
+const BULK_RENAME_MAP = [
+  ['เนื้อออสเตรเลีย', 'เนื้อออสเตรีย'],
+  ['หนวดหมึกเรดาร์', 'หนวกหมึกเรด้า'],
+  ['เห็ดทรัฟเฟิล', 'เห็ดทัฟเฟิล'],
+  ['คริสตัลไข่ปลา', 'คริสตั้ลไข่ปลา'],
+  ['ซาลาเปาช็อคลาวา', 'ซาลาเปาช๊อคลาวา'],
+  ['หมั่นโถว', 'หมั่นโถว่'],
+];
+function openBulkRenameModal(){
+  const root = document.getElementById('modalRoot');
+  const rows = BULK_RENAME_MAP.map((pair, i)=>{
+    const [oldName, newName] = pair;
+    const exists = ITEMS.some(it=>it.name===oldName);
+    const uncertain = oldName==='หนวดหมึกเรดาร์';
+    return `<label style="display:flex; align-items:center; gap:8px; padding:8px 0; border-bottom:1px solid #eee; font-size:13px; ${exists?'':'opacity:0.4;'}">
+      <input type="checkbox" data-renameidx="${i}" ${exists && !uncertain ? 'checked':''} ${exists?'':'disabled'}>
+      <span style="flex:1;"><s style="color:#999;">${esc(oldName)}</s> → <b>${esc(newName)}</b>${uncertain?' <span style="color:var(--red);">(ยังไม่ยืนยัน)</span>':''}${exists?'':' <span style="color:#999;">(ไม่พบในระบบ)</span>'}</span>
+    </label>`;
+  }).join('');
+  root.innerHTML = `
+    <div class="modal-overlay" id="ov">
+      <div class="modal">
+        <h2>🏷 แก้ไขชื่อสินค้าแบบกลุ่ม</h2>
+        <p class="note-txt">ติ๊กรายการที่ต้องการเปลี่ยนชื่อ ระบบจะอัปเดตชื่อสินค้าที่มีอยู่จริงในระบบ (รวมถึงประวัติเก่าที่เคยบันทึกไว้จะยังอ้างอิงชื่อเดิม ควรทำเมื่อมั่นใจแล้ว)</p>
+        <div style="max-height:300px; overflow-y:auto; margin:10px 0;">${rows}</div>
+        <div class="modal-actions">
+          <button class="btn-cancel" id="m-cancel">ยกเลิก</button>
+          <button class="btn-confirm" id="m-rename">เปลี่ยนชื่อที่เลือก</button>
+        </div>
+      </div>
+    </div>`;
+  const close = () => root.innerHTML = '';
+  document.getElementById('m-cancel').addEventListener('click', close);
+  document.getElementById('ov').addEventListener('click', (e)=>{ if(e.target.id==='ov') close(); });
+  document.getElementById('m-rename').addEventListener('click', async ()=>{
+    const checked = Array.from(root.querySelectorAll('[data-renameidx]:checked'));
+    let count = 0;
+    for(const cb of checked){
+      const [oldName, newName] = BULK_RENAME_MAP[Number(cb.dataset.renameidx)];
+      const item = ITEMS.find(it=>it.name===oldName);
+      if(item){ item.name = newName; await persistItem(item); count++; }
+    }
+    close();
+    showToast(`เปลี่ยนชื่อสินค้าแล้ว ${count} รายการ ✓`);
+    render();
+  });
+}
+
 function openBackupModal(){
   const root = document.getElementById('modalRoot');
   root.innerHTML = `
@@ -1674,6 +1947,7 @@ async function initApp(){
     EDIT_UNLOCKED = (newDate === todayStr());
     dInput.value = CURRENT_DATE;
     await loadWorkingEntries();
+    resetUndoRedo();
     render();
   }
   dInput.addEventListener('change', ()=> changeDate(dInput.value || todayStr()));
@@ -1691,9 +1965,14 @@ async function initApp(){
     let ids;
     if(APP_VIEW==='all') ids = ITEMS.map(i=>i.id);
     else ids = ITEMS.filter(i=>i.category===CURRENT_CATEGORY).map(i=>i.id);
-    await saveAllVisible(ids);
-    showToast(`บันทึกแล้ว (${ids.length} รายการ) ✓`);
-    render();
+    try{
+      await saveAllVisible(ids);
+      showToast(`บันทึกแล้ว (${ids.length} รายการ) ✓`);
+      render();
+    }catch(err){
+      console.error('Save failed:', err);
+      showToast('❌ บันทึกไม่สำเร็จ: ' + (err && err.message ? err.message : 'unknown error'));
+    }
   });
   document.getElementById('exportBtn').addEventListener('click', openExportModal);
   document.getElementById('reportBtn').addEventListener('click', ()=>{ APP_VIEW='report'; render(); });
@@ -1702,6 +1981,18 @@ async function initApp(){
   document.getElementById('backupBtn').addEventListener('click', openBackupModal);
   document.getElementById('startAllBtn').addEventListener('click', ()=>{ APP_VIEW='all'; render(); });
   document.getElementById('clearDayBtn').addEventListener('click', openClearDayConfirm);
+  document.addEventListener('keydown', (e)=>{
+    if(APP_VIEW!=='category' && APP_VIEW!=='all') return;
+    const key = e.key.toLowerCase();
+    if((e.ctrlKey||e.metaKey) && key==='z' && !e.shiftKey){ e.preventDefault(); doUndo(); }
+    else if((e.ctrlKey||e.metaKey) && (key==='y' || (key==='z' && e.shiftKey))){ e.preventDefault(); doRedo(); }
+  });
+  document.getElementById('loginSubmit').addEventListener('click', attemptLogin);
+  document.getElementById('loginPassword').addEventListener('keydown', (e)=>{ if(e.key==='Enter') attemptLogin(); });
+  document.getElementById('logoutBtn').addEventListener('click', async ()=>{
+    if(window.__auth && fauth) await window.__auth.signOut(fauth);
+    showToast('ออกจากระบบแล้ว');
+  });
 
   await loadWorkingEntries();
   render();
