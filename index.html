@@ -250,7 +250,6 @@
       <button class="icon-btn" id="themeBtn" title="สลับโหมดมืด/สว่าง">🌓</button>
       <button class="icon-btn" id="backupBtn" title="สำรอง/กู้คืนข้อมูล">🗂</button>
       <button class="icon-btn" id="homeBtn" title="หน้าแรก">🏠</button>
-      <button class="icon-btn" id="logoutBtn" title="ออกจากระบบ" style="display:none;">🚪</button>
     </div>
   </div>
   <div class="date-row">
@@ -285,20 +284,6 @@
 </div>
 
 <div id="modalRoot"></div>
-<div class="modal-overlay" id="loginOverlay" style="display:none; z-index:500;">
-  <div class="modal">
-    <h2>🔒 เข้าสู่ระบบร้าน</h2>
-    <p class="note-txt">กรอกรหัสผ่านร้านเพื่อเข้าใช้งาน (รหัสเดียวกันสำหรับทุกคนในร้าน) — เข้าครั้งเดียวแล้วเครื่องนี้จะจำไว้ให้</p>
-    <div class="field">
-      <label>รหัสผ่านร้าน</label>
-      <input type="password" id="loginPassword" placeholder="กรอกรหัสผ่าน">
-    </div>
-    <p class="note-txt" id="loginError" style="color:var(--red); display:none;"></p>
-    <div class="modal-actions">
-      <button class="btn-confirm" id="loginSubmit" style="flex:1;">เข้าสู่ระบบ</button>
-    </div>
-  </div>
-</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -393,13 +378,9 @@ const FIREBASE_CONFIG = {
 };
 // ต้องตรงกับที่กรอกใน Firestore Security Rules ถ้าต้องการแยกข้อมูลหลายร้าน
 const SHOP_ID = "default-shop";
-// อีเมลภายใน (ผู้ใช้ไม่เห็น) ผูกกับรหัสผ่านร้านเดียว — ต้องสร้างผู้ใช้นี้ใน
-// Firebase Console → Authentication → Users ให้ตรงกับอีเมลนี้เป๊ะๆ (ดู README ข้อ 3)
-const AUTH_EMAIL = SHOP_ID + '@stock-app.local';
 
 let CLOUD_ENABLED = false;
 let fdb = null;
-let fauth = null;
 let unsubItems=null, unsubCats=null, unsubEntries=null;
 let SUPPRESS_ECHO = false; // avoid re-render storms while writing locally
 let firestoreListenersStarted = false;
@@ -412,30 +393,15 @@ async function initCloudSync(){
   try{
     const appMod = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
     const fsMod = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
-    const authMod = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js');
     const app = appMod.initializeApp(FIREBASE_CONFIG);
     fdb = fsMod.getFirestore(app);
-    fauth = authMod.getAuth(app);
     window.__fs = fsMod;
-    window.__auth = authMod;
     CLOUD_ENABLED = true;
     setSyncStatus('syncing', 'กำลังเชื่อมต่อ...');
-
-    authMod.onAuthStateChanged(fauth, async (user)=>{
-      const logoutBtn = document.getElementById('logoutBtn');
-      if(user){
-        hideLoginOverlay();
-        if(logoutBtn) logoutBtn.style.display = '';
-        if(!firestoreListenersStarted){
-          firestoreListenersStarted = true;
-          await startFirestoreListeners(fsMod);
-        }
-      } else {
-        if(logoutBtn) logoutBtn.style.display = 'none';
-        setSyncStatus('off', 'ต้องเข้าสู่ระบบก่อนใช้งาน');
-        showLoginOverlay();
-      }
-    });
+    if(!firestoreListenersStarted){
+      firestoreListenersStarted = true;
+      await startFirestoreListeners(fsMod);
+    }
     return true;
   }catch(err){
     console.error('Cloud sync init failed', err);
@@ -499,33 +465,6 @@ async function startFirestoreListeners(fsMod){
   setSyncStatus('on','ซิงก์แบบเรียลไทม์ — เชื่อมต่อแล้ว');
 }
 
-function showLoginOverlay(){
-  const ov = document.getElementById('loginOverlay');
-  if(ov) ov.style.display = 'flex';
-}
-function hideLoginOverlay(){
-  const ov = document.getElementById('loginOverlay');
-  if(ov) ov.style.display = 'none';
-}
-async function attemptLogin(){
-  const pwEl = document.getElementById('loginPassword');
-  const errEl = document.getElementById('loginError');
-  const btn = document.getElementById('loginSubmit');
-  const pw = pwEl.value;
-  errEl.style.display = 'none';
-  if(!pw){ errEl.textContent = 'กรุณากรอกรหัสผ่าน'; errEl.style.display = 'block'; return; }
-  btn.disabled = true; btn.textContent = 'กำลังเข้าสู่ระบบ...';
-  try{
-    await window.__auth.signInWithEmailAndPassword(fauth, AUTH_EMAIL, pw);
-    pwEl.value = '';
-  }catch(err){
-    console.error('Login failed:', err);
-    errEl.textContent = 'รหัสผ่านไม่ถูกต้อง หรือยังไม่ได้ตั้งค่าผู้ใช้ใน Firebase (ดู README ข้อ 3)';
-    errEl.style.display = 'block';
-  }finally{
-    btn.disabled = false; btn.textContent = 'เข้าสู่ระบบ';
-  }
-}
 function setSyncStatus(state, label){
 
   const dot = document.getElementById('syncDot');
@@ -1985,12 +1924,6 @@ async function initApp(){
     const key = e.key.toLowerCase();
     if((e.ctrlKey||e.metaKey) && key==='z' && !e.shiftKey){ e.preventDefault(); doUndo(); }
     else if((e.ctrlKey||e.metaKey) && (key==='y' || (key==='z' && e.shiftKey))){ e.preventDefault(); doRedo(); }
-  });
-  document.getElementById('loginSubmit').addEventListener('click', attemptLogin);
-  document.getElementById('loginPassword').addEventListener('keydown', (e)=>{ if(e.key==='Enter') attemptLogin(); });
-  document.getElementById('logoutBtn').addEventListener('click', async ()=>{
-    if(window.__auth && fauth) await window.__auth.signOut(fauth);
-    showToast('ออกจากระบบแล้ว');
   });
 
   await loadWorkingEntries();
