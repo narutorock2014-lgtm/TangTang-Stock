@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700;800&family=Noto+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 <style>
   :root{
     --counter:#0D0D0D; --counter-2:#1A1A1A; --rail:#333333;
@@ -192,14 +193,36 @@
   .table-toolbar{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; padding:6px 6px 8px; }
   .toolbar-hint{ font-family:'Noto Sans Thai',sans-serif; font-size:12px; color:#cfc7ba; }
   html[data-theme="light"] .toolbar-hint{ color:#6E6E6E; }
-  .toolbar-btn{ border:1px solid var(--rail); background:var(--counter-2); color:var(--paper); border-radius:8px; padding:7px 12px; font-family:'Kanit',sans-serif; font-weight:600; font-size:12.5px; cursor:pointer; white-space:nowrap; }
-  html[data-theme="light"] .toolbar-btn{ color:var(--ink); }
-  .toolbar-btn:disabled{ opacity:0.4; cursor:not-allowed; }
   .undo-redo-group{ display:flex; gap:4px; }
   .undo-redo-group .icon-btn:disabled{ opacity:0.35; cursor:not-allowed; }
+  td.col-drag{ width:28px; text-align:center; padding:0 !important; }
+  .drag-handle{ cursor:grab; font-size:16px; color:#B9B2A4; user-select:none; touch-action:none; display:inline-block; padding:8px 4px; }
+  .drag-handle:active{ cursor:grabbing; }
+  tr.sortable-ghost{ opacity:0.35; }
+  tr.sortable-chosen td{ background:#FFF4D6 !important; }
   .add-item-btn:hover{ border-color:var(--amber); color:var(--amber); }
 
   .chart-card{ background:var(--paper); border-radius:12px; padding:14px; margin-top:12px; box-shadow:0 8px 18px -10px rgba(0,0,0,0.55); }
+
+  #purchaseOrderPrintArea{ background:var(--paper); border-radius:12px; padding:18px; box-shadow:0 8px 18px -10px rgba(0,0,0,0.55); }
+  .po-header h2{ font-family:'Kanit',sans-serif; color:var(--ink); margin:0 0 4px; font-size:19px; }
+  .po-meta{ font-family:'Noto Sans Thai',sans-serif; font-size:12.5px; color:var(--ink-soft); margin-bottom:14px; }
+  .po-cat-block{ margin-bottom:18px; }
+  .po-cat-title{ font-family:'Kanit',sans-serif; font-weight:700; font-size:14.5px; color:var(--amber); border-bottom:2px solid var(--paper-2); padding-bottom:6px; margin-bottom:6px; }
+  table.po-table{ width:100%; border-collapse:collapse; font-family:'Noto Sans Thai',sans-serif; }
+  table.po-table thead th{ text-align:left; font-size:12px; color:var(--ink-soft); font-weight:600; padding:6px 8px; border-bottom:1px solid var(--line); }
+  table.po-table tbody td{ padding:8px; font-size:13.5px; color:var(--ink); border-bottom:1px solid var(--line); }
+  table.po-table td.po-name{ font-weight:600; }
+  .po-actions{ display:flex; gap:10px; margin-top:16px; flex-wrap:wrap; }
+  .po-actions button{ flex:1; min-width:160px; padding:13px; border-radius:10px; border:none; font-family:'Kanit',sans-serif; font-weight:700; font-size:14px; cursor:pointer; }
+  .po-actions .btn-secondary{ background:var(--paper-2); color:var(--ink); }
+  .po-actions .btn-primary{ background:var(--amber); color:var(--amber-ink); }
+  @media print{
+    header.top, .tabs, .summary, .bottom-bar, .category-header, .home-grid, .home-actions-row, .hero-btn, .sync-banner{ display:none !important; }
+    body{ background:#fff; padding-bottom:0; }
+    #purchaseOrderPrintArea{ box-shadow:none; }
+    .po-actions{ display:none !important; }
+  }
   .chart-card h4{ font-family:'Kanit',sans-serif; color:var(--ink); margin:0 0 10px; font-size:14px; }
   .chart-card canvas{ max-height:280px; }
 
@@ -835,7 +858,7 @@ function render(){
     homeActions.style.display = 'none';
     heroBtn.style.display = 'none';
     bottomBar.style.display = 'flex';
-    document.getElementById('searchWrap').style.display = (APP_VIEW==='report'||APP_VIEW==='history')?'none':'block';
+    document.getElementById('searchWrap').style.display = (APP_VIEW==='report'||APP_VIEW==='history'||APP_VIEW==='purchase')?'none':'block';
 
     if(APP_VIEW === 'category'){
       document.getElementById('categoryHeader').style.display = 'flex';
@@ -863,6 +886,12 @@ function render(){
       document.getElementById('summary').style.display = 'none';
       renderCategoryHeader('📁 ประวัติ — แยกรายเดือน/สัปดาห์');
       renderHistoryView();
+    } else if(APP_VIEW === 'purchase'){
+      document.getElementById('categoryHeader').style.display = 'flex';
+      document.getElementById('tabs').style.display = 'none';
+      document.getElementById('summary').style.display = 'none';
+      renderCategoryHeader('🛒 ใบสั่งซื้อวันนี้ — ' + CURRENT_DATE);
+      renderPurchaseOrderView();
     }
   }
 }
@@ -908,12 +937,14 @@ function renderHome(){
 
   const actions = document.getElementById('homeActionsRow');
   actions.innerHTML = `
+    <button class="action-card" id="homePurchaseBtn">🛒 ใบสั่งซื้อวันนี้<span class="sub">ดึงเฉพาะของหมด/ใกล้หมด ส่งให้คนซื้อได้เลย</span></button>
     <button class="action-card" id="homeHistoryBtn">📁 ประวัติ<span class="sub">ดูย้อนหลังแยกเดือน/สัปดาห์ พร้อมดาวน์โหลด</span></button>
     <button class="action-card" id="homeExportBtn">⬇️ Export Excel<span class="sub">รายวัน / สัปดาห์ / เดือน — เลือกวันที่ได้</span></button>
     <button class="action-card" id="homeReportBtn">📊 รายงาน & กราฟ<span class="sub">ดูสรุปการใช้สินค้าแบบกราฟ</span></button>
     <button class="action-card" id="homeRenameBtn">🏷 แก้ไขชื่อสินค้าแบบกลุ่ม<span class="sub">แก้การสะกดชื่อสินค้าหลายรายการพร้อมกัน</span></button>
     <button class="action-card" id="homeBackupBtn">🗂 สำรอง/กู้คืนข้อมูล<span class="sub">Export/Import เป็นไฟล์ JSON</span></button>
   `;
+  document.getElementById('homePurchaseBtn').addEventListener('click', ()=>{ APP_VIEW='purchase'; render(); });
   document.getElementById('homeHistoryBtn').addEventListener('click', ()=>{ APP_VIEW='history'; render(); });
   document.getElementById('homeExportBtn').addEventListener('click', openExportModal);
   document.getElementById('homeReportBtn').addEventListener('click', ()=>{ APP_VIEW='report'; render(); });
@@ -1029,7 +1060,7 @@ function buildCategorySection(catId, showAddBtn){
   const wrap = document.createElement('div');
   const locked = isPastDateLocked();
   let items = ITEMS.filter(i=>i.category===catId).sort((a,b)=>(a.order||0)-(b.order||0));
-  const reorderable = !SEARCH_Q.trim(); // disable up/down while a search filter is active (order would be ambiguous)
+  const reorderable = !SEARCH_Q.trim(); // dragging disabled while a search filter is active (order would be ambiguous)
   if(SEARCH_Q.trim()){
     const q = SEARCH_Q.trim().toLowerCase();
     items = items.filter(i=>i.name.toLowerCase().includes(q));
@@ -1053,10 +1084,9 @@ function buildCategorySection(catId, showAddBtn){
     const used = calcUsedToday(e);
     const s = statusFor(rem, item.reorderPoint);
     const dl = daysLeft(rem, item.avgPerDay);
-    const moveUpDis = (!reorderable || idx===0) ? 'disabled' : '';
-    const moveDownDis = (!reorderable || idx===items.length-1) ? 'disabled' : '';
     return `
     <tr data-id="${item.id}" class="row-${s.cls}">
+      <td class="col-drag">${reorderable ? '<span class="drag-handle" title="ลากเพื่อสลับตำแหน่ง">⠿</span>' : ''}</td>
       <td class="col-idx">${idx+1}</td>
       <td class="col-item"><div class="name">${esc(item.name)}</div></td>
       <td class="col-unit"><input type="text" class="inp-unit" value="${esc(item.unit)}"></td>
@@ -1073,8 +1103,6 @@ function buildCategorySection(catId, showAddBtn){
       <td class="col-status"><span class="status-badge ${s.cls}">${s.emoji} ${s.text}</span>${e.saved?'':'<span class="unsaved-dot" title="ยังไม่บันทึก"></span>'}</td>
       <td class="col-note"><input type="text" class="inp-note" placeholder="หมายเหตุ..." value="${esc(e.note||'')}" ${dis}></td>
       <td class="col-actions">
-        <button class="row-btn btn-row-up" title="ย้ายขึ้น" ${moveUpDis}>🔼</button>
-        <button class="row-btn btn-row-down" title="ย้ายลง" ${moveDownDis}>🔽</button>
         <button class="row-btn btn-row-save" title="บันทึก" ${dis}>💾</button>
         <button class="row-btn btn-row-edit" title="แก้ไข">✎</button>
         <button class="row-btn btn-row-del" title="ลบ" ${dis}>🗑</button>
@@ -1083,22 +1111,19 @@ function buildCategorySection(catId, showAddBtn){
   }).join('');
 
   wrap.innerHTML = `
-    <div class="table-toolbar">
-      <span class="toolbar-hint">${reorderable ? '💡 ใช้ปุ่ม 🔼🔽 ในตารางเพื่อสลับลำดับรายการ (จำไว้ให้ตรงกับที่พนักงานชิน)' : '🔍 กำลังค้นหา — ปิดช่องค้นหาก่อนเพื่อสลับลำดับรายการ'}</span>
-      <button class="toolbar-btn" data-sortcat="${catId}" ${reorderable ? '' : 'disabled'}>🔤 เรียงตามตัวอักษร (ก-ฮ)</button>
-    </div>
+    ${!reorderable ? `<div class="table-toolbar"><span class="toolbar-hint">🔍 กำลังค้นหา — ปิดช่องค้นหาก่อนเพื่อสลับตำแหน่งรายการ</span></div>` : ''}
     <div class="table-wrap">
       <table class="stock-table" data-cat="${catId}">
         <thead>
           <tr class="group-row">
-            <th></th><th></th><th></th><th></th>
+            <th></th><th></th><th></th><th></th><th></th>
             <th colspan="3">สต็อกวันนี้</th>
             <th></th><th></th><th></th>
             <th colspan="2">ค่าตั้งต้น</th>
             <th></th><th></th><th></th><th></th>
           </tr>
           <tr>
-            <th>ลำดับ</th><th class="col-item">รายการ</th><th>หน่วย</th><th>สต็อกทั้งหมด</th>
+            <th></th><th>ลำดับ</th><th class="col-item">รายการ</th><th>หน่วย</th><th>สต็อกทั้งหมด</th>
             <th>ลงของเพิ่ม</th><th>เดลิเวอรี่</th><th>ขึ้นบาร์</th>
             <th>รวมใช้ไปวันนี้</th>
             <th>ทั้งหมด</th><th>คงเหลือ</th>
@@ -1118,9 +1143,32 @@ function bindCategorySection(catId){
   const table = document.querySelector(`table.stock-table[data-cat="${catId}"]`);
   const addBtn = document.querySelector(`.add-item-btn[data-addcat="${catId}"]`);
   if(addBtn) addBtn.addEventListener('click', ()=> openItemModal(null, catId));
-  const sortBtn = document.querySelector(`.toolbar-btn[data-sortcat="${catId}"]`);
-  if(sortBtn) sortBtn.addEventListener('click', ()=> sortCategoryAlphabetically(catId));
   if(!table) return;
+
+  const tbody = table.querySelector('tbody');
+  if(tbody && !SEARCH_Q.trim() && typeof Sortable !== 'undefined'){
+    Sortable.create(tbody, {
+      handle: '.drag-handle',
+      animation: 150,
+      delay: 150,
+      delayOnTouchOnly: true,
+      touchStartThreshold: 5,
+      onEnd: async ()=>{
+        const rows = Array.from(tbody.querySelectorAll('tr[data-id]'));
+        for(let i=0;i<rows.length;i++){
+          const it = ITEMS.find(x=>x.id===rows[i].dataset.id);
+          if(it) it.order = i+1;
+        }
+        for(const row of rows){
+          const it = ITEMS.find(x=>x.id===row.dataset.id);
+          if(it) await persistItem(it);
+        }
+        showToast('สลับตำแหน่งแล้ว ✓');
+        // update the ลำดับ number cells in place without a full rebuild (keeps drag position stable)
+        rows.forEach((row, i)=>{ const idxCell = row.querySelector('.col-idx'); if(idxCell) idxCell.textContent = i+1; });
+      }
+    });
+  }
 
   table.querySelectorAll('tbody tr').forEach(row=>{
     const id = row.dataset.id;
@@ -1200,36 +1248,7 @@ function bindCategorySection(catId){
     });
     row.querySelector('.btn-row-edit').addEventListener('click', ()=> openItemModal(item, item.category));
     row.querySelector('.btn-row-del').addEventListener('click', ()=> openDeleteItemConfirm(item));
-    const upBtn = row.querySelector('.btn-row-up');
-    const downBtn = row.querySelector('.btn-row-down');
-    if(upBtn) upBtn.addEventListener('click', ()=> moveItem(item, -1));
-    if(downBtn) downBtn.addEventListener('click', ()=> moveItem(item, 1));
   });
-}
-
-async function moveItem(item, direction){
-  const siblings = ITEMS.filter(i=>i.category===item.category).sort((a,b)=>(a.order||0)-(b.order||0));
-  const idx = siblings.findIndex(i=>i.id===item.id);
-  const swapIdx = idx + direction;
-  if(swapIdx < 0 || swapIdx >= siblings.length) return;
-  const other = siblings[swapIdx];
-  const tmp = item.order;
-  item.order = other.order;
-  other.order = tmp;
-  await persistItem(item);
-  await persistItem(other);
-  showToast('สลับลำดับแล้ว ✓');
-  render();
-}
-
-async function sortCategoryAlphabetically(catId){
-  const items = ITEMS.filter(i=>i.category===catId).sort((a,b)=>a.name.localeCompare(b.name,'th'));
-  for(let i=0;i<items.length;i++){
-    items[i].order = i+1;
-    await persistItem(items[i]);
-  }
-  showToast('เรียงตามตัวอักษรแล้ว ✓');
-  render();
 }
 
 /* =======================================================================
@@ -1378,6 +1397,101 @@ function groupIntoWeeks(dates){
   const weeks = [];
   for(let i=0;i<dates.length;i+=7) weeks.push(dates.slice(i,i+7));
   return weeks;
+}
+
+/* =======================================================================
+   PURCHASE ORDER VIEW (ใบสั่งซื้อ) — only items that need buying, ready to
+   print or copy as plain text to send straight to whoever goes shopping.
+======================================================================= */
+function getPurchaseNeededItems(){
+  const rows = [];
+  CATEGORIES.forEach(cat=>{
+    const items = ITEMS.filter(i=>i.category===cat.id).sort((a,b)=>(a.order||0)-(b.order||0));
+    items.forEach(item=>{
+      const e = ENTRIES[item.id] || {carryOver:0, added:0, delivery:0, bar:0};
+      const rem = calcRemaining(e);
+      const s = statusFor(rem, item.reorderPoint);
+      if(s.cls==='danger' || s.cls==='order' || s.cls==='near'){
+        rows.push({catName: cat.name, catIcon: cat.icon, name: item.name, unit: item.unit, rem, reorderPoint: item.reorderPoint, s});
+      }
+    });
+  });
+  const urgencyRank = {danger:0, order:1, near:2};
+  rows.sort((a,b)=> (urgencyRank[a.s.cls]-urgencyRank[b.s.cls]) || a.catName.localeCompare(b.catName,'th'));
+  return rows;
+}
+
+function renderPurchaseOrderView(){
+  const main = document.getElementById('main');
+  const rows = getPurchaseNeededItems();
+
+  if(rows.length===0){
+    main.innerHTML = `
+      <div class="empty-state">
+        <div class="big">🎉</div>
+        <h3>วันนี้ไม่มีรายการต้องสั่งซื้อ</h3>
+        <div>สินค้าทุกอย่างยังอยู่ในระดับปกติ</div>
+      </div>`;
+    return;
+  }
+
+  const dangerCount = rows.filter(r=>r.s.cls==='danger').length;
+  const orderCount = rows.filter(r=>r.s.cls==='order').length;
+  const nearCount = rows.filter(r=>r.s.cls==='near').length;
+
+  const byCategory = {};
+  rows.forEach(r=>{ (byCategory[r.catName] = byCategory[r.catName]||[]).push(r); });
+
+  main.innerHTML = `
+    <div id="purchaseOrderPrintArea">
+      <div class="po-header">
+        <h2>🛒 ใบสั่งซื้อวันนี้</h2>
+        <div class="po-meta">วันที่: ${CURRENT_DATE} &nbsp;•&nbsp; รวม ${rows.length} รายการ
+          (⛔ หมด ${dangerCount} &nbsp; 🔴 ต้องสั่ง ${orderCount} &nbsp; 🟡 ใกล้หมด ${nearCount})
+        </div>
+      </div>
+      ${Object.keys(byCategory).map(catName=>`
+        <div class="po-cat-block">
+          <div class="po-cat-title">${byCategory[catName][0].catIcon} ${esc(catName)}</div>
+          <table class="po-table">
+            <thead><tr><th>รายการ</th><th>หน่วย</th><th>คงเหลือ</th><th>จุดสั่งซื้อ</th><th>สถานะ</th></tr></thead>
+            <tbody>
+              ${byCategory[catName].map(r=>`
+                <tr>
+                  <td class="po-name">${esc(r.name)}</td>
+                  <td>${esc(r.unit)}</td>
+                  <td>${r.rem}</td>
+                  <td>${r.reorderPoint}</td>
+                  <td><span class="status-badge ${r.s.cls}">${r.s.emoji} ${r.s.text}</span></td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+      `).join('')}
+    </div>
+    <div class="po-actions">
+      <button class="btn-secondary" id="poPrintBtn">🖨 พิมพ์ใบสั่งซื้อ</button>
+      <button class="btn-primary" id="poCopyBtn">📋 คัดลอกเป็นข้อความ (ส่งไลน์/แชท)</button>
+    </div>
+  `;
+  document.getElementById('poPrintBtn').addEventListener('click', ()=> window.print());
+  document.getElementById('poCopyBtn').addEventListener('click', async ()=>{
+    let text = `🛒 ใบสั่งซื้อวันนี้ (${CURRENT_DATE})\n`;
+    text += `รวม ${rows.length} รายการ — ⛔หมด ${dangerCount} / 🔴ต้องสั่ง ${orderCount} / 🟡ใกล้หมด ${nearCount}\n`;
+    Object.keys(byCategory).forEach(catName=>{
+      text += `\n${byCategory[catName][0].catIcon} ${catName}\n`;
+      byCategory[catName].forEach(r=>{
+        text += `${r.s.emoji} ${r.name} — เหลือ ${r.rem} ${r.unit} (จุดสั่งซื้อ ${r.reorderPoint})\n`;
+      });
+    });
+    try{
+      await navigator.clipboard.writeText(text);
+      showToast('คัดลอกข้อความแล้ว ✓ นำไปวางในไลน์/แชทได้เลย');
+    }catch(err){
+      console.error('Clipboard copy failed:', err);
+      showToast('❌ คัดลอกไม่สำเร็จ — เบราว์เซอร์อาจไม่รองรับ');
+    }
+  });
 }
 
 function renderHistoryView(){
